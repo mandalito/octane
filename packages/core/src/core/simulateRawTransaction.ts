@@ -2,7 +2,8 @@ import {
   Connection,
   PublicKey,
   SimulatedTransactionResponse,
-  Transaction
+  Transaction,
+  VersionedTransaction
 } from '@solana/web3.js';
 
 // Simulate a signed, serialized transaction before broadcasting
@@ -11,23 +12,18 @@ export async function simulateRawTransaction(
   rawTransaction: Buffer,
   includeAccounts?: boolean | Array<PublicKey>
 ): Promise<SimulatedTransactionResponse> {
-  /*
-     Simulating a transaction directly can cause the `signatures` property to change.
-     Possibly related:
-     https://github.com/solana-labs/solana/issues/21722
-     https://github.com/solana-labs/solana/pull/21724
-     https://github.com/solana-labs/solana/issues/20743
-     https://github.com/solana-labs/solana/issues/22021
+  // Decode raw transaction
+  const legacyTx = Transaction.from(rawTransaction);
+  const message = legacyTx.compileMessage();
+  const versionedTx = new VersionedTransaction(message);
 
-     Clone it from the bytes instead, and make sure it's likely to succeed before paying for it.
+  // Copy over signatures from the legacy transaction
+  versionedTx.signatures = legacyTx.signatures.map(sig => sig.signature ?? Buffer.alloc(64));
 
-     Within simulateTransaction there is a "transaction instanceof Transaction" check. Since connection is passed
-     from outside the library, it uses parent application's version of web3.js. "instanceof" won't recognize a match.
-     Instead, let's explicitly call for simulateTransaction within the dependency of the library.
-   */
+  // Simulate
   const simulated = await Connection.prototype.simulateTransaction.call(
     connection,
-    Transaction.from(rawTransaction),
+    versionedTx,
     {
       sigVerify: true,
       replaceRecentBlockhash: true,
@@ -48,6 +44,5 @@ export async function simulateRawTransaction(
   );
 
   if (simulated.value.err) throw new Error('Simulation error');
-
   return simulated.value;
 }
