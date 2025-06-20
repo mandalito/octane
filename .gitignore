@@ -15,3 +15,5 @@ next-env.d.ts
 
 test-ledger
 dist/
+keys/octane.json
+package/server/.env
