@@ -26,12 +26,13 @@
     "dependencies": {
         "@orca-so/whirlpools-sdk": "^0.5.0",
         "@project-serum/anchor": "^0.25.0",
-        "@solana/spl-token": "^0.2.0",
+        "@solana/spl-token": "^0.3.0",
         "@solana/web3.js": "^1.34.0",
+        "axios": "^0.27.2",
         "bs58": "^4.0.1",
         "cache-manager": "^3.6.0",
         "encoding": "^0.1.13",
-        "axios": "^0.27.2"
+        "tweetnacl": "^1.0.3"
     },
     "devDependencies": {
         "@types/bn.js": "^5.1.0",
@@ -48,6 +49,6 @@
         "shx": "^0.3.3",
         "start-server-and-test": "^1.14.0",
         "ts-node": "^10.4.0",
-        "typescript": "^4.4.4"
+        "typescript": "^5.8.3"
     }
 }
