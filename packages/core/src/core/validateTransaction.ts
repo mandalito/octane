@@ -17,10 +17,23 @@ export async function validateTransaction(
 
     // TODO: handle nonce accounts?
 
+    // OLD
     // Check Octane's RPC node for the blockhash to make sure it's synced and the fee is reasonable
-    const feeCalculator = await connection.getFeeCalculatorForBlockhash(transaction.recentBlockhash);
-    if (!feeCalculator.value) throw new Error('blockhash not found');
-    if (feeCalculator.value.lamportsPerSignature > lamportsPerSignature) throw new Error('fee too high');
+    //const feeCalculator = await connection.getFeeCalculatorForBlockhash(transaction.recentBlockhash);
+    //if (!feeCalculator.value) throw new Error('blockhash not found');
+    //if (feeCalculator.value.lamportsPerSignature > lamportsPerSignature) throw new Error('fee too high');
+
+    // Check Octane's RPC node for the blockhash to make sure it's synced and the fee is reasonable
+    const message = transaction.compileMessage();
+    const { value: fee } = await connection.getFeeForMessage(message);
+
+    // We'll use the variable name feeCalculator for backward compatibility
+    const feeCalculator = { lamportsPerSignature: fee };
+
+    // Now feeCalculator.lamportsPerSignature is the total fee for the transaction
+    if (feeCalculator.lamportsPerSignature === null) throw new Error('blockhash not found');
+    if (feeCalculator.lamportsPerSignature > lamportsPerSignature * maxSignatures) throw new Error('fee too high');
+
 
     // Check the signatures for length, the primary signature, and secondary signature(s)
     if (!transaction.signatures.length) throw new Error('no signatures');
