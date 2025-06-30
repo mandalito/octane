@@ -28,7 +28,7 @@ export async function simulateRawTransaction(
     };
 
     const simulated = await connection.simulateTransaction(transaction, config);
-
+    console.log(JSON.stringify(sim.value, null, 2));
     if (simulated.value.err) throw new Error('Simulation error');
 
     return simulated.value;
