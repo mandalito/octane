@@ -10,10 +10,10 @@
         "transfer": {
             "tokens": [
                 {
-                    "mint": "Combnk1QmuiXdxvWQRtZkeRDgLJEe2SsN1CvmYookcCe",
-                    "account": "5nBfm6V1UVsq7Y6MJrQULoHXRs8n8pr9jHeSA7pzUNAS",
+                    "mint": "2XhF8JfNDapMdH9jb18gAZEeSxbLAo6B2WfLqKcfnHZU",
+                    "account": "3L4DT1amYET9aLLsTzk98j1vC2b3zV7QcYxnTjfdqQtN",
                     "decimals": 9,
-                    "fee": 1000000000
+                    "fee": 100000000
                 }
             ]
         },

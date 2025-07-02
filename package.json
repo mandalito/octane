@@ -26,5 +26,8 @@
     },
     "workspaces": [
         "packages/*"
-    ]
+    ],
+    "dependencies": {
+        "dotenv": "^17.0.1"
+    }
 }
