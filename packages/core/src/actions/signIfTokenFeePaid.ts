@@ -35,7 +35,7 @@ export async function signWithTokenFee(
     sameSourceTimeout = 5000
 ): Promise<{ signature: string }> {
     // Prevent simple duplicate transactions using a hash of the message
-    let key = `transaction/${base58.encode(sha256(transaction.serializeMessage()))}`;
+    let key = `transaction/${base58.encode(sha256(new Uint8Array(transaction.serializeMessage())))}`;
     if (await cache.get(key)) throw new Error('duplicate transaction');
     await cache.set(key, true);
 

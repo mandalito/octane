@@ -14,7 +14,7 @@ export async function simulateRawTransaction(
     rawTransaction: Buffer,
     includeAccounts?: boolean | PublicKey[]
 ): Promise<SimulatedTransactionResponse> {
-    const transaction = VersionedTransaction.deserialize(rawTransaction);
+    const transaction = VersionedTransaction.deserialize(new Uint8Array(rawTransaction));
 
     const config: SimulateTransactionConfig = {
         sigVerify: false,

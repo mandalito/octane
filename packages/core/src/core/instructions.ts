@@ -2,7 +2,7 @@ import { TransactionInstruction } from '@solana/web3.js';
 
 export function areInstructionsEqual(instruction1: TransactionInstruction, instruction2: TransactionInstruction) {
     return (
-        instruction1.data.equals(instruction2.data) &&
+        new Uint8Array(instruction1.data).every((val, i) => val === new Uint8Array(instruction2.data)[i]) &&
         instruction1.programId.equals(instruction2.programId) &&
         instruction1.keys.every(
             (key1, i) =>
