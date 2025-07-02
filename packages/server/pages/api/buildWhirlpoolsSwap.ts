@@ -94,7 +94,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
             transaction.sign(ENV_SECRET_KEYPAIR);
             response.status(200).send({
                 status: 'ok',
-                transaction: base58.encode(transaction.serialize({verifySignatures: false})),
+                transaction: base58.encode(new Uint8Array(transaction.serialize({verifySignatures: false}))),
                 quote,
                 messageToken
             });
@@ -104,7 +104,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         // Respond with the confirmed transaction signature
         response.status(200).send({
             status: 'ok',
-            transaction: base58.encode(transaction.serialize({verifySignatures: false})),
+            transaction: base58.encode(new Uint8Array(transaction.serialize({verifySignatures: false}))),
             quote,
             messageToken
         });
