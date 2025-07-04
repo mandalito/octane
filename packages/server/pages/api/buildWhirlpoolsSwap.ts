@@ -14,12 +14,10 @@ import {
     ENV_SECRET_KEYPAIR,
     cors,
     rateLimit,
-    isReturnedSignatureAllowed,
-    ReturnSignatureConfigField,
 } from '../../src';
 import config from '../../../../config.json';
 
-// Endpoint to pay for transactions with an SPL token transfer
+// Endpoint to build whirlpools swap transaction
 export default async function (request: NextApiRequest, response: NextApiResponse) {
     await cors(request, response);
     await rateLimit(request, response);
@@ -83,25 +81,12 @@ export default async function (request: NextApiRequest, response: NextApiRespons
             }
         );
 
-        if (config.returnSignature !== undefined) {
-            if (!await isReturnedSignatureAllowed(
-                request,
-                config.returnSignature as ReturnSignatureConfigField
-            )) {
-                response.status(400).send({ status: 'error', message: 'anti-spam check failed' });
-                return;
-            }
-            transaction.sign(ENV_SECRET_KEYPAIR);
-            response.status(200).send({
-                status: 'ok',
-                transaction: base58.encode(new Uint8Array(transaction.serialize({verifySignatures: false}))),
-                quote,
-                messageToken
-            });
-            return;
-        }
+        // PRODUCTION: Toujours signer et retourner la transaction
+        transaction.sign(ENV_SECRET_KEYPAIR);
+        
+        console.log('✅ Transaction Whirlpools construite et signée');
 
-        // Respond with the confirmed transaction signature
+        // Respond with the signed transaction, quote and messageToken
         response.status(200).send({
             status: 'ok',
             transaction: base58.encode(new Uint8Array(transaction.serialize({verifySignatures: false}))),
@@ -109,6 +94,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
             messageToken
         });
     } catch (error) {
+        console.error('❌ Erreur dans buildWhirlpoolsSwap:', error);
         let message = '';
         if (error instanceof Error) {
             message = error.message;

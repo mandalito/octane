@@ -8,8 +8,6 @@ import {
     ENV_SECRET_KEYPAIR,
     cors,
     rateLimit,
-    isReturnedSignatureAllowed,
-    ReturnSignatureConfigField,
 } from '../../src';
 import config from '../../../../config.json';
 
@@ -44,22 +42,13 @@ export default async function (request: NextApiRequest, response: NextApiRespons
             cache
         );
 
-        if (config.returnSignature !== undefined) {
-            if (!await isReturnedSignatureAllowed(
-                request,
-                config.returnSignature as ReturnSignatureConfigField
-            )) {
-                response.status(400).send({ status: 'error', message: 'anti-spam check failed' });
-                return;
-            }
-            response.status(200).send({ status: 'ok', signature });
-            return;
-        }
-
+        // PRODUCTION: Toujours envoyer la transaction sur la blockchain
         transaction.addSignature(
             ENV_SECRET_KEYPAIR.publicKey,
             Buffer.from(base58.decode(signature))
         );
+
+        console.log('🚀 Envoi transaction sur blockchain...', signature);
 
         await sendAndConfirmRawTransaction(
             connection,
@@ -67,9 +56,12 @@ export default async function (request: NextApiRequest, response: NextApiRespons
             {commitment: 'confirmed'}
         );
 
+        console.log('✅ Transaction confirmée:', signature);
+
         // Respond with the confirmed transaction signature
         response.status(200).send({ status: 'ok', signature });
     } catch (error) {
+        console.error('❌ Erreur dans transfer:', error);
         let message = '';
         if (error instanceof Error) {
             message = error.message;
