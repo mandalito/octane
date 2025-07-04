@@ -20,20 +20,20 @@
         "createAssociatedTokenAccount": {
             "tokens": [
                 {
-                    "mint": "__PLACEHOLDER__",
-                    "account": "__PLACEHOLDER__",
+                    "mint": "2XhF8JfNDapMdH9jb18gAZEeSxbLAo6B2WfLqKcfnHZU",
+                    "account": "3L4DT1amYET9aLLsTzk98j1vC2b3zV7QcYxnTjfdqQtN",
                     "decimals": 9,
-                    "fee": 10000000
+                    "fee": 127014000
                 }
             ]
         },
         "whirlpoolsSwap": {
             "tokens": [
                 {
-                    "mint": "__PLACEHOLDER__",
-                    "account": "__PLACEHOLDER__",
+                    "mint": "2XhF8JfNDapMdH9jb18gAZEeSxbLAo6B2WfLqKcfnHZU",
+                    "account": "3L4DT1amYET9aLLsTzk98j1vC2b3zV7QcYxnTjfdqQtN",
                     "decimals": 9,
-                    "fee": 10000000
+                    "fee": 100000000
                 }
             ]
         }
