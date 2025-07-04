@@ -1,4 +1,5 @@
-import { PublicKey, sendAndConfirmRawTransaction, Transaction } from '@solana/web3.js';
+// pages/api/transfer.ts - Avec vérification SOL intégrée
+import { sendAndConfirmRawTransaction, Transaction } from '@solana/web3.js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base58 from 'bs58';
 import { signWithTokenFee, core } from '@solana/octane-core';
@@ -9,12 +10,35 @@ import {
     cors,
     rateLimit,
 } from '../../src';
+import { fundManagerService } from '../../src/fundManager';
 import config from '../../../../config.json';
 
-// Endpoint to pay for transactions with an SPL token transfer
 export default async function (request: NextApiRequest, response: NextApiResponse) {
     await cors(request, response);
     await rateLimit(request, response);
+
+    // 🔍 VÉRIFICATION CRITIQUE SOL avant transaction
+    try {
+        console.log('🔍 Checking SOL balance before processing transaction...');
+        const solCheck = await fundManagerService.checkCriticalSOL();
+        
+        if (!solCheck.shouldProceed) {
+            console.log('🚨 Transaction blocked due to critical SOL shortage');
+            response.status(503).send({ 
+                status: 'error', 
+                message: solCheck.message || 'Service temporarily unavailable due to insufficient SOL'
+            });
+            return;
+        }
+        
+        if (solCheck.message) {
+            console.log('⚠️ SOL warning:', solCheck.message);
+        }
+        
+    } catch (checkError) {
+        console.error('❌ SOL check failed, proceeding with transaction:', checkError);
+        // Continuer même si le check échoue pour ne pas bloquer le service
+    }
 
     // Deserialize a base58 wire-encoded transaction from the request
     const serialized = request.body?.transaction;
@@ -60,6 +84,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
 
         // Respond with the confirmed transaction signature
         response.status(200).send({ status: 'ok', signature });
+        
     } catch (error) {
         console.error('❌ Erreur dans transfer:', error);
         let message = '';
